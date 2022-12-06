@@ -16,13 +16,14 @@ type (
 		NoWait     bool
 
 		// amqp.Table arguments
-		Lazy                 bool          // "x-queue-mode": "lazy",
-		Mode                 string        // "x-queue-mode": "lazy",
-		MessageTTL           time.Duration // "x-message-ttl": 100, in seconds
-		DeadLetterExchange   *Exchange     // "x-dead-letter-exchange": "name",
-		DeadLetterRoutingKey string        // "x-dead-letter-routing-key": "key value",
-		DeadLetterStrategy   string        // "dead-letter-strategy": "at-least-once"
-		Overflow             string        // "x-overflow": "reject-publish"
+		Lazy                   bool          // "x-queue-mode": "lazy",
+		Mode                   string        // "x-queue-mode": "lazy",
+		MessageTTL             time.Duration // "x-message-ttl": 100, in seconds
+		DeadLetterExchange     *Exchange     // "x-dead-letter-exchange": "name",
+		DeadLetterExchangeName string        // "x-dead-letter-exchange": "name",
+		DeadLetterRoutingKey   string        // "x-dead-letter-routing-key": "key value",
+		DeadLetterStrategy     string        // "dead-letter-strategy": "at-least-once"
+		Overflow               string        // "x-overflow": "reject-publish"
 
 		Args amqp.Table
 	}
@@ -53,6 +54,8 @@ func (spec Queue) Apply(channel *amqp.Channel) error {
 		}
 
 		spec.Args["x-dead-letter-exchange"] = spec.DeadLetterExchange.Name
+	} else if spec.DeadLetterExchangeName != "" {
+		spec.Args["x-dead-letter-exchange"] = spec.DeadLetterExchangeName
 	}
 
 	if spec.DeadLetterStrategy != "" {
