@@ -21,6 +21,10 @@ type (
 )
 
 func (spec Subscription) Consume(channel *amqp.Channel) (<-chan amqp.Delivery, error) {
+	if channel == nil {
+		return nil, ErrChannelCanNotBeNil
+	}
+
 	if spec.QueueName == "" && (spec.Queue == nil || spec.Queue.Name == "") {
 		return nil, fmt.Errorf("%w: either Queue or QueueName is required", ErrMissingRequiredArg)
 	}
